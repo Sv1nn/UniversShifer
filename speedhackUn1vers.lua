@@ -1,106 +1,82 @@
-            -- Получаем игрока
-local player = game.Players.LocalPlayer
+-- Sv1nn Hub
 
--- Устанавливаем флаг, который будет указывать, что персонаж быстрый
-local isFast = true
+if game.PlaceId == 7560156054 then
 
--- Устанавливаем направление движения персонажа
-local moveDirection = Vector3.new(0, 0, 0)
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
 
--- Функция для обновления положения персонажа каждый кадр игры
-local function updateCharacterPosition()
-    -- Получаем персонажа игрока
-    local character = player.Character
-    if character then
-        -- Получаем корневую часть персонажа (HumanoidRootPart)
-        local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-        
-        -- Получаем вектор движения, учитывая выбранную скорость
-        local moveVector = moveDirection * (isFast and 10 or 5)
-        
-        -- Устанавливаем новое положение персонажа с учетом его скорости
-        local newPosition = humanoidRootPart.Position + moveVector
-        
-        -- Пускаем луч вперед, чтобы обнаружить препятствия
-        local ray = Ray.new(humanoidRootPart.Position, moveVector)
-        local hitPart, hitPosition = workspace:FindPartOnRay(ray)
-        if hitPart then
-            newPosition = hitPosition - moveVector:Unit() * 2 -- Отступаем от препятствия
-        end
-        
-        -- Устанавливаем новое положение
-        humanoidRootPart.CFrame = CFrame.new(newPosition)
-    end
-end
+local Window = OrionLib:MakeWindow({Name = "Gertigetr Funpay", IntroText = "Gertigetr Funpay", HidePremium = false, SaveConfig = true, ConfigFolder = "OrionTest"})
 
--- Подписываемся на событие обновления кадра игры (Heartbeat), чтобы вызывать функцию обновления положения персонажа
-game:GetService("RunService").Heartbeat:Connect(updateCharacterPosition)
+-- Westbound hub
 
--- Создаем GUI-кнопки для управления перемещением персонажа
-local gui = Instance.new("ScreenGui")
-gui.Parent = game.Players.LocalPlayer.PlayerGui
+local WestTab = Window:MakeTab({
+  Name = "Westbound",
+  Icon = "rbxassetid://4483345998",
+  PremiumOnly = false
+})
 
-local buttonSize = UDim2.new(0.15, 0, 0.1, 0)
+local Section = WestTab:AddSection({
+  Name = "Westbound"
+})
 
-local upButton = Instance.new("TextButton")
-upButton.Text = "Up"
-upButton.Size = buttonSize
-upButton.Position = UDim2.new(0.425, 0, 0.1, 0)
-upButton.Parent = gui
+WestTab:AddButton({
+  Name = "AutofarmV1",
+  Callback = function()
+      while true do
+          local args = {
+              [1] = "Safe",
+              [2] = workspace:WaitForChild("Safe")
+          }
+          
+          game:GetService("ReplicatedStorage"):WaitForChild("GeneralEvents"):WaitForChild("Rob"):FireServer(unpack(args))
+          wait(0.1)
+      end
+  end
+})
 
-local downButton = Instance.new("TextButton")
-downButton.Text = "Down"
-downButton.Size = buttonSize
-downButton.Position = UDim2.new(0.425, 0, 0.6, 0)
-downButton.Parent = gui
+WestTab:AddButton({
+  Name = "Autofarm Mod",
+  Callback = function()
+      while true do
+          local args = {
+              [1] = "Complete"
+          }
+          workspace:WaitForChild("Safe"):WaitForChild("OpenSafe"):FireServer(unpack(args))
+          wait(20)
+      end
+  end
+})
 
-local leftButton = Instance.new("TextButton")
-leftButton.Text = "Left"
-leftButton.Size = buttonSize
-leftButton.Position = UDim2.new(0.3, 0, 0.35, 0)
-leftButton.Parent = gui
+WestTab:AddButton({
+Name = "Tp user",
+Callback = function()
+      local RunService = game:GetService("RunService")
 
-local rightButton = Instance.new("TextButton")
-rightButton.Text = "Right"
-rightButton.Size = buttonSize
-rightButton.Position = UDim2.new(0.55, 0, 0.35, 0)
-rightButton.Parent = gui
+      local function moveCharacter()
+          local char = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:wait(5)
+          
+          char.HumanoidRootPart.CFrame = CFrame.new(1627.92297, 128.849976, 1579.78149, -0.0333881564, -3.30991874e-08, -0.999442458, 2.13044915e-09, 1, -3.31888224e-08, 0.999442458, -3.23737481e-09, -0.0333881564)
+          
+          RunService.Heartbeat:wait(5)
+      end
+      
+      RunService.Heartbeat:Connect(function()
+          moveCharacter()
+      end)
+  end    
+})
 
--- Обработка нажатий на кнопки
-upButton.MouseButton1Down:Connect(function()
-    moveDirection = Vector3.new(0, 0, -1)
-end)
-
-downButton.MouseButton1Down:Connect(function()
-    moveDirection = Vector3.new(0, 0, 1)
-end)
-
-leftButton.MouseButton1Down:Connect(function()
-    moveDirection = Vector3.new(-1, 0, 0)
-end)
-
-rightButton.MouseButton1Down:Connect(function()
-    moveDirection = Vector3.new(1, 0, 0)
-end)
-
--- При отпускании кнопки прекращаем движение
-local function stopMovement()
-    moveDirection = Vector3.new(0, 0, 0)
-end
-
-upButton.MouseButton1Up:Connect(stopMovement)
-downButton.MouseButton1Up:Connect(stopMovement)
-leftButton.MouseButton1Up:Connect(stopMovement)
-rightButton.MouseButton1Up:Connect(stopMovement)
-
--- Добавляем кнопку для переключения скорости
-local speedButton = Instance.new("TextButton")
-speedButton.Text = "Toggle Speed"
-speedButton.Size = UDim2.new(0.2, 0, 0.05, 0)
-speedButton.Position = UDim2.new(0.4, 0, 0.8, 0)
-speedButton.Parent = gui
-
--- Обработка нажатия на кнопку для переключения скорости
-speedButton.MouseButton1Click:Connect(function()
-    isFast = not isFast
-end)
+WestTab:AddButton({
+Name = "AspawnMod",
+Callback = function()
+      while true do
+          local args = {
+              [1] = "Grayridge",
+              [2] = false,
+              [3] = false
+          }
+          
+          game:GetService("ReplicatedStorage"):WaitForChild("GeneralEvents"):WaitForChild("Spawn"):FireServer(unpack(args))
+          wait(50)
+      end
+  end    
+})
